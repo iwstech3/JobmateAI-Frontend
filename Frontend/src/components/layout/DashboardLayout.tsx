@@ -26,8 +26,8 @@ const sidebarItems = [
     { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
     { icon: Briefcase, label: 'Applications', href: '/dashboard/applications' },
     { icon: FileText, label: 'Resumes', href: '/dashboard/resumes' },
-    { icon: FileText, label: 'CV Generator', href: '/dashboard/cv-generator' },
-    { icon: Zap, label: 'Auto Apply', href: '/dashboard/auto-apply' },
+    { icon: FileText, label: 'CV Generator', href: '/dashboard/cv-generator', featured: true },
+    { icon: Zap, label: 'Auto Apply', href: '/dashboard/auto-apply', featured: true },
     { icon: Search, label: 'Job Matches', href: '/dashboard/job-matches' },
     { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
 ];
@@ -80,17 +80,30 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                     <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
                         {sidebarItems.map((item) => {
                             const isActive = router.pathname === item.href;
+                            // @ts-ignore
+                            const isFeatured = item.featured;
                             return (
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden ${isActive
                                         ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                                        : 'text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                                        : isFeatured
+                                            ? 'bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-700 dark:text-purple-300 hover:from-purple-500/20 hover:to-blue-500/20 border border-purple-200/50 dark:border-purple-500/20'
+                                            : 'text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
                                         }`}
                                 >
-                                    <item.icon className={`w-5 h-5 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`} />
-                                    {item.label}
+                                    {isFeatured && (
+                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    )}
+                                    <item.icon className={`w-5 h-5 relative z-10 ${isActive ? 'text-blue-600 dark:text-blue-400' : isFeatured ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400 dark:text-gray-500'}`} />
+                                    <span className="relative z-10">{item.label}</span>
+                                    {isFeatured && (
+                                        <span className="ml-auto relative z-10 flex h-2 w-2">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                                        </span>
+                                    )}
                                 </Link>
                             );
                         })}
