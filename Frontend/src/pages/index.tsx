@@ -1,9 +1,22 @@
 import Head from "next/head";
-import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle, Briefcase, Users, Zap, Shield } from "lucide-react";
+import { motion, AnimatePresence, useMotionTemplate, useMotionValue } from "framer-motion";
+import { ArrowRight, CheckCircle, Briefcase, Users, Zap, Shield, Menu, X } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect, MouseEvent } from "react";
 
 export default function Home() {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    // Cursor Spotlight Logic
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+
+    function handleMouseMove({ currentTarget, clientX, clientY }: MouseEvent) {
+        const { left, top } = currentTarget.getBoundingClientRect();
+        mouseX.set(clientX - left);
+        mouseY.set(clientY - top);
+    }
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -27,11 +40,54 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen bg-neutral-950 text-white selection:bg-blue-500/30">
+        <div
+            className="min-h-screen bg-neutral-950 text-white selection:bg-blue-500/30 relative overflow-hidden"
+            onMouseMove={handleMouseMove}
+        >
             <Head>
                 <title>JobMate AI - The Future of Hiring</title>
                 <meta name="description" content="AI-powered job matching platform" />
             </Head>
+
+            {/* Cursor Spotlight */}
+            <motion.div
+                className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
+                style={{
+                    background: useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(29, 78, 216, 0.15), transparent 80%)`,
+                }}
+            />
+
+            {/* Aurora Background Effect */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <motion.div
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.3, 0.5, 0.3],
+                        x: [0, 100, 0],
+                        y: [0, -50, 0]
+                    }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[128px]"
+                />
+                <motion.div
+                    animate={{
+                        scale: [1, 1.5, 1],
+                        opacity: [0.2, 0.4, 0.2],
+                        x: [0, -100, 0],
+                        y: [0, 50, 0]
+                    }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                    className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[128px]"
+                />
+                <motion.div
+                    animate={{
+                        scale: [1, 1.3, 1],
+                        opacity: [0.2, 0.4, 0.2],
+                    }}
+                    transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+                    className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-indigo-500/20 rounded-full blur-[96px]"
+                />
+            </div>
 
             {/* Navbar */}
             <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-neutral-950/80 backdrop-blur-md">
@@ -42,12 +98,14 @@ export default function Home() {
                         </div>
                         <span className="font-bold text-xl tracking-tight">JobMate AI</span>
                     </div>
+
+                    {/* Desktop Menu */}
                     <div className="hidden md:flex items-center gap-8 text-sm font-medium text-neutral-400">
                         <a href="#features" className="hover:text-white transition-colors">Features</a>
                         <a href="#roles" className="hover:text-white transition-colors">For Candidates</a>
                         <a href="#roles" className="hover:text-white transition-colors">For Employers</a>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="hidden md:flex items-center gap-4">
                         <Link href="/login" className="text-sm font-medium text-neutral-400 hover:text-white transition-colors">
                             Log in
                         </Link>
@@ -58,12 +116,51 @@ export default function Home() {
                             Sign up
                         </Link>
                     </div>
+
+                    {/* Mobile Menu Toggle */}
+                    <button
+                        className="md:hidden text-neutral-400 hover:text-white"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
+                        {isMobileMenuOpen ? <X /> : <Menu />}
+                    </button>
                 </div>
+
+                {/* Mobile Menu Dropdown */}
+                <AnimatePresence>
+                    {isMobileMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="md:hidden border-t border-white/10 bg-neutral-950 overflow-hidden"
+                        >
+                            <div className="p-6 space-y-4 flex flex-col">
+                                <a href="#features" className="text-neutral-400 hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>Features</a>
+                                <a href="#roles" className="text-neutral-400 hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>For Candidates</a>
+                                <a href="#roles" className="text-neutral-400 hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>For Employers</a>
+                                <hr className="border-white/10" />
+                                <Link href="/login" className="text-neutral-400 hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                    Log in
+                                </Link>
+                                <Link
+                                    href="/signup"
+                                    className="bg-white text-black px-4 py-2 rounded-full text-center hover:bg-neutral-200 transition-colors"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Sign up
+                                </Link>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </nav>
 
-            <main className="pt-24 pb-16">
+            <main className="pt-24 pb-16 relative z-10">
                 {/* Hero Section */}
                 <section className="relative px-6 py-20 md:py-32 max-w-7xl mx-auto flex flex-col items-center text-center">
+                    {/* Grid Background */}
                     <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#3b82f622_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
 
                     <motion.div
@@ -101,7 +198,7 @@ export default function Home() {
                 </section>
 
                 {/* Features Section */}
-                <section id="features" className="py-24 bg-neutral-900/30 border-y border-white/5">
+                <section id="features" className="py-24 bg-neutral-900/30 border-y border-white/5 backdrop-blur-sm">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="text-center mb-16">
                             <h2 className="text-3xl font-bold mb-4">Why Choose JobMate AI?</h2>
@@ -129,7 +226,7 @@ export default function Home() {
                                 <motion.div
                                     key={idx}
                                     whileHover={{ y: -5 }}
-                                    className="p-8 rounded-2xl bg-neutral-900 border border-white/5 hover:border-white/10 transition-colors"
+                                    className="p-8 rounded-2xl bg-neutral-900/50 border border-white/5 hover:border-white/10 transition-colors backdrop-blur-sm"
                                 >
                                     <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6">
                                         {feature.icon}
@@ -148,7 +245,7 @@ export default function Home() {
                 <section id="roles" className="py-24 max-w-7xl mx-auto px-6">
                     <div className="grid md:grid-cols-2 gap-8">
                         {/* Candidate Card */}
-                        <div className="group relative overflow-hidden rounded-3xl bg-neutral-900 border border-white/10 p-10">
+                        <div className="group relative overflow-hidden rounded-3xl bg-neutral-900/50 border border-white/10 p-10 backdrop-blur-sm">
                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <Briefcase className="w-48 h-48" />
                             </div>
@@ -175,7 +272,7 @@ export default function Home() {
                         </div>
 
                         {/* Employer Card */}
-                        <div className="group relative overflow-hidden rounded-3xl bg-neutral-900 border border-white/10 p-10">
+                        <div className="group relative overflow-hidden rounded-3xl bg-neutral-900/50 border border-white/10 p-10 backdrop-blur-sm">
                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <Users className="w-48 h-48" />
                             </div>
@@ -205,7 +302,7 @@ export default function Home() {
             </main>
 
             {/* Footer */}
-            <footer className="border-t border-white/10 bg-neutral-950 py-12">
+            <footer className="border-t border-white/10 bg-neutral-950/80 backdrop-blur-md py-12 relative z-10">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="flex items-center gap-2">
                         <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center">
