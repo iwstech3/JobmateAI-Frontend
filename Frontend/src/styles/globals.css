@@ -75,3 +75,63 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Print Styles for CV Generator */
+@media print {
+
+  /* Hide everything except CV preview */
+  body * {
+    visibility: hidden;
+  }
+
+  #cv-preview-content,
+  #cv-preview-content * {
+    visibility: visible;
+  }
+
+  #cv-preview-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Optimize typography for print */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Remove dark mode styles in print */
+  .dark {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Ensure proper page breaks */
+  .cv-preview {
+    page-break-inside: avoid;
+  }
+
+  /* Remove borders and shadows */
+  * {
+    border-color: #e5e7eb !important;
+    box-shadow: none !important;
+  }
+
+  /* Optimize colors for print */
+  .text-white {
+    color: black !important;
+  }
+
+  .bg-gradient-to-r,
+  .bg-gradient-to-br {
+    background: white !important;
+    color: black !important;
+  }
+}
