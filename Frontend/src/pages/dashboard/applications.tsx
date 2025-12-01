@@ -7,23 +7,18 @@ import { Application, ApplicationStatus } from '@/types/application';
 import { Search, Filter, ArrowUpDown, ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// Mock Data
-const MOCK_APPLICATIONS: Application[] = Array.from({ length: 25 }).map((_, i) => ({
-    id: `app-${i + 1}`,
-    jobTitle: ['Senior Frontend Engineer', 'Product Designer', 'Full Stack Developer', 'UX Researcher'][i % 4],
-    company: ['TechCorp', 'DesignStudio', 'WebSolutions', 'InnovateAI'][i % 4],
-    location: ['Remote', 'New York, NY', 'San Francisco, CA', 'London, UK'][i % 4],
-    type: ['Full-time', 'Contract', 'Full-time', 'Part-time'][i % 4],
-    status: ['Submitted', 'Screening', 'Shortlisted', 'Interview Scheduled', 'Rejected', 'Accepted'][i % 6] as ApplicationStatus,
-    appliedDate: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-    lastUpdated: new Date(Date.now() - Math.random() * 1000000000).toISOString(),
-    salaryRange: ['$120k - $150k', '$90k - $110k', '$130k - $160k', '$100k - $130k'][i % 4],
-}));
+import { useApplicationStore } from '@/store/applicationStore';
+import { applicationService } from '@/services/applications';
 
 export default function ApplicationsPage() {
-    const [applications, setApplications] = useState<Application[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const {
+        applications,
+        isLoading,
+        error,
+        setApplications,
+        setLoading,
+        setError
+    } = useApplicationStore();
 
     // Filters & Sort
     const [searchQuery, setSearchQuery] = useState('');
@@ -35,20 +30,18 @@ export default function ApplicationsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
-    // Simulate Fetching
-    const fetchApplications = () => {
-        setIsLoading(true);
+    const fetchApplications = async () => {
+        setLoading(true);
         setError(null);
-        setTimeout(() => {
-            // Simulate random error (10% chance)
-            if (Math.random() < 0.1) {
-                setError('Failed to load applications. Please try again.');
-                setIsLoading(false);
-            } else {
-                setApplications(MOCK_APPLICATIONS);
-                setIsLoading(false);
-            }
-        }, 1500);
+        try {
+            const data = await applicationService.getAll();
+            setApplications(data);
+        } catch (err) {
+            console.error(err);
+            setError('Failed to load applications. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {

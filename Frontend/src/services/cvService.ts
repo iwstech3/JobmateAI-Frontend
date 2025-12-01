@@ -1,3 +1,4 @@
+import apiClient from '@/lib/api-client';
 import {
     CVData,
     CVGenerationRequest,
@@ -8,7 +9,7 @@ import {
 // Local Storage Keys
 const CV_STORAGE_KEY = 'jobmate_current_cv';
 
-// Mock CV Templates
+// Mock CV Templates (these could also come from backend)
 export const CV_TEMPLATES: CVTemplate[] = [
     {
         id: 'professional',
@@ -31,94 +32,87 @@ export const CV_TEMPLATES: CVTemplate[] = [
 ];
 
 /**
- * Simulates AI-powered CV generation
- * In production, this would call your backend API
+ * Generate CV using backend AI API
  */
 export async function generateCV(
     request: CVGenerationRequest
 ): Promise<CVGenerationResponse> {
     try {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        // Mock AI enhancement of professional summary
-        const enhancedSummary = request.professionalSummary
-            ? enhanceText(request.professionalSummary)
-            : generateDefaultSummary(request);
-
-        // Mock AI enhancement of work experience descriptions
-        const enhancedWorkExperience = request.workExperience.map((exp) => ({
-            ...exp,
-            description: enhanceText(exp.description),
-            achievements: exp.achievements.map((achievement) =>
-                enhanceText(achievement)
-            ),
-        }));
-
-        const cvData: CVData = {
-            id: generateId(),
-            personalInfo: request.personalInfo,
-            professionalSummary: enhancedSummary,
-            workExperience: enhancedWorkExperience,
-            education: request.education,
-            skills: request.skills,
-            certifications: request.certifications || [],
-            languages: request.languages || [],
-            achievements: request.achievements || [],
-            template: request.templateId,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
+        const response = await apiClient.post<CVData>('/resumes/generate', request);
 
         return {
             success: true,
-            data: cvData,
+            data: response.data,
             message: 'CV generated successfully',
         };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error generating CV:', error);
         return {
             success: false,
-            error: 'Failed to generate CV. Please try again.',
+            error: error.response?.data?.detail || 'Failed to generate CV. Please try again.',
         };
     }
 }
 
 /**
- * Regenerates CV with AI improvements
+ * Regenerate CV with AI improvements
  */
 export async function regenerateCV(
     currentCV: CVData
 ): Promise<CVGenerationResponse> {
     try {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        // Mock AI regeneration - slightly modify the content
-        const regeneratedCV: CVData = {
-            ...currentCV,
-            professionalSummary: enhanceText(currentCV.professionalSummary),
-            workExperience: currentCV.workExperience.map((exp) => ({
-                ...exp,
-                description: enhanceText(exp.description),
-                achievements: exp.achievements.map((achievement) =>
-                    enhanceText(achievement)
-                ),
-            })),
-            updatedAt: new Date().toISOString(),
-        };
+        const response = await apiClient.post<CVData>(`/resumes/${currentCV.id}/regenerate`);
 
         return {
             success: true,
-            data: regeneratedCV,
+            data: response.data,
             message: 'CV regenerated successfully',
         };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error regenerating CV:', error);
         return {
             success: false,
-            error: 'Failed to regenerate CV. Please try again.',
+            error: error.response?.data?.detail || 'Failed to regenerate CV. Please try again.',
         };
+    }
+}
+
+/**
+ * Get all user's CVs from backend
+ */
+export async function getUserCVs(): Promise<CVData[]> {
+    try {
+        const response = await apiClient.get<CVData[]>('/resumes');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching user CVs:', error);
+        return [];
+    }
+}
+
+/**
+ * Get a specific CV by ID
+ */
+export async function getCVById(id: string): Promise<CVData | null> {
+    try {
+        const response = await apiClient.get<CVData>(`/resumes/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching CV:', error);
+        return null;
+    }
+}
+
+/**
+ * Delete a CV
+ */
+export async function deleteCV(id: string): Promise<boolean> {
+    try {
+        await apiClient.delete(`/resumes/${id}`);
+        return true;
+    } catch (error) {
+        console.error('Error deleting CV:', error);
+        return false;
     }
 }
 

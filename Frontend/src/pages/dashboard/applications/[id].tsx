@@ -7,18 +7,9 @@ import { StatusBadge } from '@/components/common/StatusBadge';
 import { Application, ApplicationStatus } from '@/types/application';
 import { ArrowLeft, Building, MapPin, Calendar, DollarSign, Clock, ExternalLink, Edit, Trash2 } from 'lucide-react';
 
-// Mock Data (Same as in applications.tsx for consistency)
-const MOCK_APPLICATION: Application = {
-    id: 'app-1',
-    jobTitle: 'Senior Frontend Engineer',
-    company: 'TechCorp',
-    location: 'Remote',
-    type: 'Full-time',
-    status: 'Interview Scheduled',
-    appliedDate: new Date().toISOString(),
-    lastUpdated: new Date().toISOString(),
-    salaryRange: '$120k - $150k',
-};
+import { applicationService } from '@/services/applications';
+
+// ... imports
 
 export default function ApplicationDetailsPage() {
     const router = useRouter();
@@ -29,15 +20,21 @@ export default function ApplicationDetailsPage() {
     useEffect(() => {
         if (!id) return;
 
-        // Simulate fetch
-        setIsLoading(true);
-        setTimeout(() => {
-            setApplication({
-                ...MOCK_APPLICATION,
-                id: id as string,
-            });
-            setIsLoading(false);
-        }, 1000);
+        const fetchApplication = async () => {
+            setIsLoading(true);
+            try {
+                const appId = Array.isArray(id) ? id[0] : id;
+                const data = await applicationService.getById(appId);
+                setApplication(data);
+            } catch (error) {
+                console.error('Failed to fetch application:', error);
+                // Optionally set error state
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchApplication();
     }, [id]);
 
     if (isLoading) {
