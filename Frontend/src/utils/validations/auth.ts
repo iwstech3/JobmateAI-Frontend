@@ -13,7 +13,7 @@ export const registerSchema = z.object({
         .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
         .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
         .regex(/[0-9]/, { message: "Password must contain at least one number" }),
-    role: z.string().optional(),
+    role: z.enum(["job_seeker", "employer"]).optional(),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
