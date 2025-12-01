@@ -1,0 +1,76 @@
+# JobMate AI Frontend Architecture Guide
+
+This document explains the core architecture of the JobMate AI frontend, specifically how state management, API calls, and authentication work.
+
+## 1. State Management (Zustand)
+
+We use **Zustand** for global state management. It's simpler and more lightweight than Redux.
+
+### Stores Location
+All stores are located in `src/store/`.
+
+### Core Stores
+- **authStore.ts**: Manages user session, token, and authentication status. It persists to `localStorage` automatically.
+- **applicationStore.ts**: Manages job applications list, filters, and pagination.
+- **uiStore.ts**: Manages global UI state like loading spinners, toasts, and modals.
+
+### How to Use
+```typescript
+import { useAuthStore } from '@/store/authStore';
+
+// In a component
+const { user, isAuthenticated } = useAuthStore();
+const logout = useAuthStore((state) => state.logout);
+```
+
+## 2. API Client (Axios)
+
+We use a centralized Axios instance in `src/lib/api-client.ts`.
+
+### Features
+- **Base URL**: Automatically set from `NEXT_PUBLIC_API_URL`.
+- **Auth Token**: Automatically injects the Bearer token from `authStore` into every request.
+- **Error Handling**: Automatically handles 401 (Unauthorized) errors by logging the user out and redirecting to login.
+
+### How to Use
+```typescript
+import apiClient from '@/lib/api-client';
+
+// Make a request
+const response = await apiClient.get('/some-endpoint');
+```
+
+## 3. Authentication Flow
+
+Authentication is handled by the `useAuth` hook and `ProtectedRoute` component.
+
+### `useAuth` Hook
+Located in `src/hooks/useAuth.ts`.
+- Provides `login`, `register`, `logout` methods.
+- Accesses `user` and `isAuthenticated` state.
+- Can automatically redirect unauthenticated users if `requireAuth` is true.
+
+### `ProtectedRoute` Component
+Located in `src/components/auth/ProtectedRoute.tsx`.
+- Wraps protected pages (like Dashboard).
+- Checks if user is authenticated.
+- Redirects to `/login` if not authenticated.
+- Shows a loading spinner while checking auth.
+
+### Global Protection
+In `_app.tsx`, we wrap all routes starting with `/dashboard` in the `ProtectedRoute` component.
+
+## 4. Directory Structure
+
+- **src/store/**: Global state stores (Zustand).
+- **src/lib/**: Shared libraries and configurations (Axios client).
+- **src/hooks/**: Custom React hooks (`useAuth`).
+- **src/services/**: API service layers (auth, applications, cv).
+- **src/types/**: TypeScript interfaces and types.
+
+## 5. Adding New Features
+
+1. **Define Types**: Add types in `src/types/`.
+2. **Create Service**: Add API calls in `src/services/`.
+3. **Create Store**: If global state is needed, create a store in `src/store/`.
+4. **Build UI**: Create components in `src/components/` and pages in `src/pages/`.

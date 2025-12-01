@@ -1,4 +1,12 @@
-import { CVData, CVGenerationRequest, CVGenerationResponse, CVTemplate } from '@/types/cv';
+import {
+    CVData,
+    CVGenerationRequest,
+    CVGenerationResponse,
+    CVTemplate,
+} from '@/types/cv';
+
+// Local Storage Keys
+const CV_STORAGE_KEY = 'jobmate_current_cv';
 
 // Mock CV Templates
 export const CV_TEMPLATES: CVTemplate[] = [
@@ -6,179 +14,233 @@ export const CV_TEMPLATES: CVTemplate[] = [
         id: 'professional',
         name: 'Professional',
         style: 'professional',
-        description: 'Clean and traditional layout perfect for corporate roles',
+        description: 'Clean and traditional design perfect for corporate roles',
     },
     {
         id: 'modern',
         name: 'Modern',
         style: 'modern',
-        description: 'Contemporary design with bold typography and colors',
+        description: 'Contemporary layout with bold typography and colors',
     },
     {
         id: 'creative',
         name: 'Creative',
         style: 'creative',
-        description: 'Unique layout ideal for creative industries',
+        description: 'Unique design for creative industries and portfolios',
     },
 ];
 
-// Mock generation messages for progress indicator
-const GENERATION_MESSAGES = [
-    'Analyzing your experience...',
-    'Crafting professional summary...',
-    'Optimizing content structure...',
-    'Applying AI enhancements...',
-    'Finalizing your CV...',
-];
+/**
+ * Simulates AI-powered CV generation
+ * In production, this would call your backend API
+ */
+export async function generateCV(
+    request: CVGenerationRequest
+): Promise<CVGenerationResponse> {
+    try {
+        // Simulate API delay
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
-// Simulate AI CV generation with realistic delay
-export const generateCV = async (request: CVGenerationRequest): Promise<CVGenerationResponse> => {
-    // Simulate API delay (1.5-3 seconds)
-    const delay = 1500 + Math.random() * 1500;
-    await new Promise(resolve => setTimeout(resolve, delay));
+        // Mock AI enhancement of professional summary
+        const enhancedSummary = request.professionalSummary
+            ? enhanceText(request.professionalSummary)
+            : generateDefaultSummary(request);
 
-    // Simulate occasional errors (5% chance)
-    if (Math.random() < 0.05) {
+        // Mock AI enhancement of work experience descriptions
+        const enhancedWorkExperience = request.workExperience.map((exp) => ({
+            ...exp,
+            description: enhanceText(exp.description),
+            achievements: exp.achievements.map((achievement) =>
+                enhanceText(achievement)
+            ),
+        }));
+
+        const cvData: CVData = {
+            id: generateId(),
+            personalInfo: request.personalInfo,
+            professionalSummary: enhancedSummary,
+            workExperience: enhancedWorkExperience,
+            education: request.education,
+            skills: request.skills,
+            certifications: request.certifications || [],
+            languages: request.languages || [],
+            achievements: request.achievements || [],
+            template: request.templateId,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+        };
+
+        return {
+            success: true,
+            data: cvData,
+            message: 'CV generated successfully',
+        };
+    } catch (error) {
+        console.error('Error generating CV:', error);
         return {
             success: false,
             error: 'Failed to generate CV. Please try again.',
         };
     }
+}
 
-    // Generate enhanced CV data
-    const cvData: CVData = {
-        id: `cv-${Date.now()}`,
-        personalInfo: request.personalInfo,
-        professionalSummary: request.professionalSummary || generateProfessionalSummary(request),
-        workExperience: request.workExperience,
-        education: request.education,
-        skills: request.skills,
-        certifications: request.certifications || [],
-        languages: request.languages || [],
-        achievements: request.achievements || [],
-        template: request.templateId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-    };
+/**
+ * Regenerates CV with AI improvements
+ */
+export async function regenerateCV(
+    currentCV: CVData
+): Promise<CVGenerationResponse> {
+    try {
+        // Simulate API delay
+        await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    return {
-        success: true,
-        data: cvData,
-        message: 'CV generated successfully!',
-    };
-};
+        // Mock AI regeneration - slightly modify the content
+        const regeneratedCV: CVData = {
+            ...currentCV,
+            professionalSummary: enhanceText(currentCV.professionalSummary),
+            workExperience: currentCV.workExperience.map((exp) => ({
+                ...exp,
+                description: enhanceText(exp.description),
+                achievements: exp.achievements.map((achievement) =>
+                    enhanceText(achievement)
+                ),
+            })),
+            updatedAt: new Date().toISOString(),
+        };
 
-// Regenerate CV with variations
-export const regenerateCV = async (cvData: CVData): Promise<CVGenerationResponse> => {
-    // Simulate API delay
-    const delay = 1000 + Math.random() * 1000;
-    await new Promise(resolve => setTimeout(resolve, delay));
-
-    // Simulate occasional errors (5% chance)
-    if (Math.random() < 0.05) {
+        return {
+            success: true,
+            data: regeneratedCV,
+            message: 'CV regenerated successfully',
+        };
+    } catch (error) {
+        console.error('Error regenerating CV:', error);
         return {
             success: false,
             error: 'Failed to regenerate CV. Please try again.',
         };
     }
+}
 
-    // Create variation with slightly different professional summary
-    const regeneratedData: CVData = {
-        ...cvData,
-        id: `cv-${Date.now()}`,
-        professionalSummary: generateProfessionalSummaryVariation(cvData.professionalSummary),
-        updatedAt: new Date().toISOString(),
-    };
-
-    return {
-        success: true,
-        data: regeneratedData,
-        message: 'CV regenerated successfully!',
-    };
-};
-
-// Get available templates
-export const getTemplates = async (): Promise<CVTemplate[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 300));
+/**
+ * Get available CV templates
+ */
+export function getTemplates(): CVTemplate[] {
     return CV_TEMPLATES;
-};
+}
 
-// Helper: Generate professional summary from experience
-const generateProfessionalSummary = (request: CVGenerationRequest): string => {
-    const yearsOfExperience = request.workExperience.length * 2; // Rough estimate
-    const topSkills = request.skills.slice(0, 3).join(', ');
-    const latestRole = request.workExperience[0]?.jobTitle || 'Professional';
-
-    const summaries = [
-        `Results-driven ${latestRole} with ${yearsOfExperience}+ years of experience in ${topSkills}. Proven track record of delivering high-impact solutions and driving business growth through innovative approaches and technical excellence.`,
-        `Accomplished ${latestRole} with extensive expertise in ${topSkills}. Demonstrated ability to lead cross-functional teams and deliver complex projects on time and within budget. Passionate about leveraging technology to solve real-world problems.`,
-        `Dynamic ${latestRole} specializing in ${topSkills} with ${yearsOfExperience}+ years of progressive experience. Known for exceptional problem-solving skills and ability to translate business requirements into technical solutions.`,
-    ];
-
-    return summaries[Math.floor(Math.random() * summaries.length)];
-};
-
-// Helper: Generate variation of professional summary
-const generateProfessionalSummaryVariation = (original: string): string => {
-    const variations = [
-        original.replace('Results-driven', 'Innovative').replace('Proven track record', 'Strong history'),
-        original.replace('Accomplished', 'Experienced').replace('Demonstrated ability', 'Proven capability'),
-        original.replace('Dynamic', 'Strategic').replace('Known for', 'Recognized for'),
-        original, // Sometimes keep it the same but with minor tweaks
-    ];
-
-    return variations[Math.floor(Math.random() * variations.length)];
-};
-
-// Download CV as PDF (using browser print)
-export const downloadCV = (cvData: CVData): void => {
-    // Trigger browser print dialog
-    window.print();
-};
-
-// Save CV to localStorage
-export const saveCVToLocalStorage = (cvData: CVData): void => {
+/**
+ * Save CV to local storage
+ */
+export function saveCVToLocalStorage(cvData: CVData): void {
     try {
-        localStorage.setItem('currentCV', JSON.stringify(cvData));
-        localStorage.setItem('cvHistory', JSON.stringify([
-            cvData,
-            ...getCVHistory().filter(cv => cv.id !== cvData.id).slice(0, 4), // Keep last 5
-        ]));
+        localStorage.setItem(CV_STORAGE_KEY, JSON.stringify(cvData));
     } catch (error) {
-        console.error('Failed to save CV to localStorage:', error);
+        console.error('Error saving CV to local storage:', error);
     }
-};
+}
 
-// Load CV from localStorage
-export const loadCVFromLocalStorage = (): CVData | null => {
+/**
+ * Load CV from local storage
+ */
+export function loadCVFromLocalStorage(): CVData | null {
     try {
-        const saved = localStorage.getItem('currentCV');
-        return saved ? JSON.parse(saved) : null;
+        const savedCV = localStorage.getItem(CV_STORAGE_KEY);
+        return savedCV ? JSON.parse(savedCV) : null;
     } catch (error) {
-        console.error('Failed to load CV from localStorage:', error);
+        console.error('Error loading CV from local storage:', error);
         return null;
     }
-};
+}
 
-// Get CV history
-export const getCVHistory = (): CVData[] => {
+/**
+ * Clear current CV from local storage
+ */
+export function clearCurrentCV(): void {
     try {
-        const history = localStorage.getItem('cvHistory');
-        return history ? JSON.parse(history) : [];
+        localStorage.removeItem(CV_STORAGE_KEY);
     } catch (error) {
-        console.error('Failed to load CV history:', error);
-        return [];
+        console.error('Error clearing CV from local storage:', error);
     }
-};
+}
 
-// Clear current CV
-export const clearCurrentCV = (): void => {
+// Helper Functions
+
+/**
+ * Generate a unique ID
+ */
+function generateId(): string {
+    return `cv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
+/**
+ * Mock AI text enhancement
+ * In production, this would use actual AI/LLM
+ */
+function enhanceText(text: string): string {
+    // Simple mock enhancement - in production, this would call an AI API
+    const enhancements = [
+        'Demonstrated strong expertise in',
+        'Successfully led and executed',
+        'Proven track record of',
+        'Effectively managed and optimized',
+        'Spearheaded innovative solutions for',
+    ];
+
+    // Don't modify if text is already enhanced or too short
+    if (text.length < 20 || enhancements.some((e) => text.includes(e))) {
+        return text;
+    }
+
+    // For demo purposes, just return the original text
+    // In production, this would make an API call to enhance the text
+    return text;
+}
+
+/**
+ * Generate a default professional summary based on user data
+ */
+function generateDefaultSummary(request: CVGenerationRequest): string {
+    const { personalInfo, workExperience, skills } = request;
+
+    const yearsOfExperience = workExperience.length;
+    const primarySkills = skills.slice(0, 3).join(', ');
+    const latestRole = workExperience[0]?.jobTitle || 'Professional';
+
+    return `Experienced ${latestRole} with ${yearsOfExperience}+ years of expertise in ${primarySkills}. Proven track record of delivering high-quality results and driving innovation. Passionate about leveraging technology to solve complex problems and create value.`;
+}
+
+/**
+ * Export CV data as JSON (for download)
+ */
+export function exportCVAsJSON(cvData: CVData): void {
+    const dataStr = JSON.stringify(cvData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `cv_${cvData.personalInfo.fullName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]
+        }.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+}
+
+/**
+ * Import CV data from JSON file
+ */
+export async function importCVFromJSON(file: File): Promise<CVData | null> {
     try {
-        localStorage.removeItem('currentCV');
-    } catch (error) {
-        console.error('Failed to clear CV:', error);
-    }
-};
+        const text = await file.text();
+        const cvData: CVData = JSON.parse(text);
 
-export { GENERATION_MESSAGES };
+        // Basic validation
+        if (!cvData.personalInfo || !cvData.workExperience || !cvData.education) {
+            throw new Error('Invalid CV data format');
+        }
+
+        return cvData;
+    } catch (error) {
+        console.error('Error importing CV:', error);
+        return null;
+    }
+}

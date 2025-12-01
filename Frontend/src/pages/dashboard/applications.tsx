@@ -219,6 +219,7 @@ export default function ApplicationsPage() {
                                                 <StatusBadge status={app.status} />
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                                {new Date(app.appliedDate).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                                 {new Date(app.lastUpdated).toLocaleDateString()}
