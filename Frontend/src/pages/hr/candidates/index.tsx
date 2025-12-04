@@ -18,69 +18,8 @@ export default function CandidateListPage() {
         const fetchCandidates = async () => {
             setIsLoading(true);
             try {
-                // In a real app, fetch from API
-                // const data = await hrService.getCandidates(jobId as string);
-
-                // Mock data for UI development
-                const mockCandidates: JobApplication[] = [
-                    {
-                        id: 'app-1',
-                        jobId: 'job-1',
-                        userId: 'user-1',
-                        applicantName: 'Alice Johnson',
-                        applicantEmail: 'alice@example.com',
-                        status: 'screening',
-                        appliedAt: new Date().toISOString(),
-                        matchScore: 92,
-                        aiAnalysis: {
-                            strengths: ['React', 'TypeScript', 'Next.js'],
-                            weaknesses: ['AWS'],
-                            recommendation: 'strong_hire',
-                            summary: 'Strong candidate with relevant experience.'
-                        }
-                    },
-                    {
-                        id: 'app-2',
-                        jobId: 'job-1',
-                        userId: 'user-2',
-                        applicantName: 'Bob Smith',
-                        applicantEmail: 'bob@example.com',
-                        status: 'submitted',
-                        appliedAt: new Date(Date.now() - 86400000).toISOString(),
-                        matchScore: 78,
-                        aiAnalysis: {
-                            strengths: ['JavaScript', 'HTML/CSS'],
-                            weaknesses: ['No TypeScript'],
-                            recommendation: 'consider',
-                            summary: 'Good frontend basics but lacks TypeScript experience.'
-                        }
-                    },
-                    {
-                        id: 'app-3',
-                        jobId: 'job-2',
-                        userId: 'user-3',
-                        applicantName: 'Charlie Brown',
-                        applicantEmail: 'charlie@example.com',
-                        status: 'interview',
-                        appliedAt: new Date(Date.now() - 172800000).toISOString(),
-                        matchScore: 85,
-                        aiAnalysis: {
-                            strengths: ['Communication', 'Project Management'],
-                            weaknesses: ['Technical depth'],
-                            recommendation: 'hire',
-                            summary: 'Great cultural fit and soft skills.'
-                        }
-                    }
-                ];
-
-                // Filter mock data if jobId is present
-                const filtered = jobId
-                    ? mockCandidates.filter(c => c.jobId === jobId)
-                    : mockCandidates;
-
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 800));
-                setCandidates(filtered);
+                const data = await hrService.getCandidates(jobId as string);
+                setCandidates(data);
             } catch (error) {
                 console.error('Failed to fetch candidates:', error);
             } finally {

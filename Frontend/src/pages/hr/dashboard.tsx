@@ -14,21 +14,8 @@ export default function HRDashboardPage() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                // In a real app, this would fetch from API
-                // For now, we can mock it if the endpoint isn't ready, or try to fetch
-                // const data = await hrService.getDashboardStats();
-
-                // Mock data for initial UI development
-                const mockStats: DashboardStats = {
-                    activeJobs: 12,
-                    totalApplications: 145,
-                    interviewsScheduled: 8,
-                    newApplicationsThisWeek: 24
-                };
-
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                setStats(mockStats);
+                const data = await hrService.getDashboardStats();
+                setStats(data);
             } catch (error) {
                 console.error('Failed to fetch stats:', error);
             } finally {

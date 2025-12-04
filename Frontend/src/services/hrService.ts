@@ -41,5 +41,13 @@ export const hrService = {
     screenCandidate: async (applicationId: string, data: { status: string; notes?: string }): Promise<JobApplication> => {
         const response = await apiClient.patch<JobApplication>(`/hr/applications/${applicationId}/screen`, data);
         return response.data;
+    },
+
+    /**
+     * Get analytics data with optional filters
+     */
+    getAnalytics: async (filters?: { startDate?: string; endDate?: string; jobId?: string }) => {
+        const response = await apiClient.get('/hr/analytics', { params: filters });
+        return response.data;
     }
 };
