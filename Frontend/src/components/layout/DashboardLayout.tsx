@@ -27,6 +27,7 @@ const sidebarItems = [
     { icon: Briefcase, label: 'Applications', href: '/dashboard/applications' },
     { icon: FileText, label: 'Resumes', href: '/dashboard/resumes' },
     { icon: FileText, label: 'CV Generator', href: '/dashboard/cv-generator', featured: true },
+    { icon: FileText, label: 'Cover Letter', href: '/dashboard/cover-letter', featured: true },
     { icon: Zap, label: 'Auto Apply', href: '/dashboard/auto-apply', featured: true },
     { icon: Search, label: 'Job Matches', href: '/dashboard/job-matches' },
     { icon: Settings, label: 'Settings', href: '/dashboard/settings' },

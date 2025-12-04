@@ -96,6 +96,37 @@ export default function RegisterPage() {
                                 <p className="text-sm text-destructive">{errors.password.message}</p>
                             )}
                         </div>
+
+                        <div className="space-y-3 pt-2">
+                            <Label>I am a...</Label>
+                            <div className="grid grid-cols-2 gap-4">
+                                <label className="cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        value="job_seeker"
+                                        className="peer sr-only"
+                                        {...register('role')}
+                                        defaultChecked
+                                    />
+                                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+                                        <span className="font-semibold">Job Seeker</span>
+                                        <span className="text-xs text-muted-foreground mt-1">Looking for jobs</span>
+                                    </div>
+                                </label>
+                                <label className="cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        value="employer"
+                                        className="peer sr-only"
+                                        {...register('role')}
+                                    />
+                                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+                                        <span className="font-semibold">Employer</span>
+                                        <span className="text-xs text-muted-foreground mt-1">Hiring talent</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
                         <Button type="submit" className="w-full" isLoading={isLoading}>
                             Create account
                         </Button>
