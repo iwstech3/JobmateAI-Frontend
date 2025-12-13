@@ -39,8 +39,17 @@ export default function ResumesPage() {
                 cvService.getUserCVs(),
                 coverLetterService.getAll()
             ]);
-            setCvs(cvData || []);
-            setCoverLetters(clData || []);
+
+            // Sort by date created (newest first)
+            const sortedCvs = (cvData || []).sort((a, b) =>
+                new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+            );
+            const sortedCls = (clData || []).sort((a, b) =>
+                new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+            );
+
+            setCvs(sortedCvs);
+            setCoverLetters(sortedCls);
         } catch (error) {
             console.error("Failed to fetch documents", error);
         } finally {
@@ -99,8 +108,8 @@ export default function ResumesPage() {
                         <button
                             onClick={() => setActiveTab('cv')}
                             className={`pb-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'cv'
-                                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                                 }`}
                         >
                             Resumes ({cvs.length})
@@ -108,8 +117,8 @@ export default function ResumesPage() {
                         <button
                             onClick={() => setActiveTab('cover-letter')}
                             className={`pb-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'cover-letter'
-                                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                                 }`}
                         >
                             Cover Letters ({coverLetters.length})
@@ -176,7 +185,7 @@ export default function ResumesPage() {
                                         <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-white/5 pt-4">
                                             <div className="flex items-center gap-1">
                                                 <Calendar className="w-3 h-3" />
-                                                {new Date().toLocaleDateString()} {/* Mock date if missing */}
+                                                {cv.createdAt ? new Date(cv.createdAt).toLocaleDateString() : 'Just now'}
                                             </div>
                                             <Link
                                                 href={`/dashboard/cv-generator?id=${cv.id}`}
