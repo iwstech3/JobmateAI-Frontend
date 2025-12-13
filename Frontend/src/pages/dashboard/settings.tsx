@@ -7,6 +7,7 @@ import { AppearanceSettings } from '@/components/settings/AppearanceSettings';
 import { NotificationSettings } from '@/components/settings/NotificationSettings';
 import { PrivacySettings } from '@/components/settings/PrivacySettings';
 import { UserSettings } from '@/types/settings';
+import { useUser } from '@clerk/nextjs';
 
 // Mock initial settings
 const INITIAL_SETTINGS: UserSettings = {
@@ -66,15 +67,39 @@ const INITIAL_SETTINGS: UserSettings = {
 };
 
 export default function SettingsPage() {
+    const { user, isLoaded } = useUser();
     const [activeSection, setActiveSection] = useState('profile');
     const [settings, setSettings] = useState<UserSettings>(INITIAL_SETTINGS);
     const [showToast, setShowToast] = useState(false);
 
-    // Load settings from localStorage on mount
+    // Initialize settings from Clerk user data
+    useEffect(() => {
+        if (isLoaded && user) {
+            setSettings(prev => ({
+                ...prev,
+                profile: {
+                    fullName: user.fullName || '',
+                    email: user.primaryEmailAddress?.emailAddress || '',
+                    phoneNumber: (user.unsafeMetadata?.phoneNumber as string) || '',
+                    location: (user.unsafeMetadata?.location as string) || '',
+                    bio: (user.unsafeMetadata?.bio as string) || '',
+                }
+            }));
+        }
+    }, [isLoaded, user]);
+
+    // Load other settings (like appearance) from localStorage
     useEffect(() => {
         const savedSettings = localStorage.getItem('userSettings');
         if (savedSettings) {
-            setSettings(JSON.parse(savedSettings));
+            const parsed = JSON.parse(savedSettings);
+            // Merge local preferences with user profile data
+            setSettings(prev => ({
+                ...prev,
+                appearance: parsed.appearance || prev.appearance,
+                notifications: parsed.notifications || prev.notifications,
+                privacy: parsed.privacy || prev.privacy
+            }));
         }
     }, []);
 

@@ -33,13 +33,12 @@ const sidebarItems = [
     { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
 ];
 
-import { useAuth } from '@/hooks/useAuth';
+import { UserButton } from "@clerk/nextjs";
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
-    const { logout } = useAuth();
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -48,9 +47,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 w-full z-40 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-white/10 px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <Zap className="w-5 h-5 text-white" fill="currentColor" />
-                    </div>
+                    <UserButton afterSignOutUrl="/login" />
                     <span className="font-bold text-lg text-neutral-900 dark:text-white">JobMate</span>
                 </div>
                 <div className="flex items-center gap-4">
@@ -121,16 +118,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                             {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
                         </button>
-                        <button
-                            onClick={() => {
-                                logout();
-                                router.push('/login');
-                            }}
-                            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            Sign Out
-                        </button>
+
+                        <div className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">
+                            <UserButton afterSignOutUrl="/login" showName={true} />
+                        </div>
                     </div>
                 </div>
             </aside>

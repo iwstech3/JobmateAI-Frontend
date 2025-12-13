@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserProfile } from '@/types/settings';
 import { Camera, Save } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 
 interface ProfileSettingsProps {
     profile: UserProfile;
@@ -8,17 +9,58 @@ interface ProfileSettingsProps {
 }
 
 export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ profile, onSave }) => {
+    const { user } = useUser();
     const [formData, setFormData] = useState(profile);
     const [hasChanges, setHasChanges] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+
+    // Update local state when prop changes (loading from Clerk)
+    useEffect(() => {
+        setFormData(profile);
+    }, [profile]);
 
     const handleChange = (field: keyof UserProfile, value: string) => {
         setFormData({ ...formData, [field]: value });
         setHasChanges(true);
     };
 
-    const handleSave = () => {
-        onSave(formData);
-        setHasChanges(false);
+    const handleSave = async () => {
+        if (!user) return;
+        setIsSaving(true);
+        try {
+            // Update core profile
+            const [firstName, ...lastNameParts] = formData.fullName.split(' ');
+            const lastName = lastNameParts.join(' ');
+
+            await user.update({
+                firstName,
+                lastName,
+                unsafeMetadata: {
+                    bio: formData.bio,
+                    location: formData.location,
+                    phoneNumber: formData.phoneNumber
+                }
+            });
+
+            onSave(formData);
+            setHasChanges(false);
+        } catch (error) {
+            console.error("Failed to update profile", error);
+            // Could add error toast here
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !user) return;
+
+        try {
+            await user.setProfileImage({ file });
+        } catch (error) {
+            console.error("Failed to update profile image", error);
+        }
     };
 
     return (
@@ -28,13 +70,23 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ profile, onSav
             <div className="space-y-6">
                 {/* Avatar */}
                 <div className="flex items-center gap-6">
-                    <div className="relative">
-                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
-                            {formData.fullName.charAt(0).toUpperCase()}
+                    <div className="relative group">
+                        <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                            {user?.imageUrl ? (
+                                <img src={user.imageUrl} alt="Profile" className="w-full h-full object-cover" />
+                            ) : (
+                                formData.fullName.charAt(0).toUpperCase()
+                            )}
                         </div>
-                        <button className="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition-colors">
+                        <label className="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition-colors cursor-pointer shadow-lg">
                             <Camera className="w-4 h-4" />
-                        </button>
+                            <input
+                                type="file"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                            />
+                        </label>
                     </div>
                     <div>
                         <h3 className="font-medium text-neutral-900 dark:text-white">Profile Picture</h3>
@@ -125,9 +177,14 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ profile, onSav
                         </button>
                         <button
                             onClick={handleSave}
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                            disabled={isSaving}
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
                         >
-                            <Save className="w-4 h-4" />
+                            {isSaving ? (
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <Save className="w-4 h-4" />
+                            )}
                             Save Changes
                         </button>
                     </div>
