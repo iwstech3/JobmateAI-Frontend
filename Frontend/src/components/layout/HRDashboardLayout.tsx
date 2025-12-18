@@ -57,7 +57,7 @@ export const HRDashboardLayout: React.FC<HRDashboardLayoutProps> = ({ children }
             <div className="lg:hidden fixed top-0 w-full z-40 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-white/10 px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <UserButton afterSignOutUrl="/login" />
-                    <span className="font-bold text-lg text-neutral-900 dark:text-white">JobMate HR</span>
+                    <Link href="/" className="font-bold text-lg text-neutral-900 dark:text-white">JobMate HR</Link>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
@@ -79,12 +79,12 @@ export const HRDashboardLayout: React.FC<HRDashboardLayoutProps> = ({ children }
             >
                 <div className="h-full flex flex-col">
                     <div className="hidden lg:flex items-center justify-between px-6 h-16 border-b border-gray-200 dark:border-white/10">
-                        <div className="flex items-center gap-2">
+                        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                             <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
                                 <Briefcase className="w-5 h-5 text-white" fill="currentColor" />
                             </div>
                             <span className="font-bold text-xl text-neutral-900 dark:text-white">JobMate HR</span>
-                        </div>
+                        </Link>
                     </div>
 
                     <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">

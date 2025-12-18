@@ -4,8 +4,10 @@ import { ArrowRight, CheckCircle, Briefcase, Users, Zap, Shield, Menu, X, Sun, M
 import Link from "next/link";
 import { useState, useEffect, MouseEvent } from "react";
 import { useTheme } from "@/context/ThemeContext";
+import { useUser } from "@clerk/nextjs";
 
 export default function Home() {
+    const { user, isLoaded } = useUser();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { theme, toggleTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
@@ -124,15 +126,26 @@ export default function Home() {
                         >
                             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                         </button>
-                        <Link href="/login" className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-white transition-colors">
-                            Log in
-                        </Link>
-                        <Link
-                            href="/register"
-                            className="text-sm font-medium bg-neutral-900 dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors"
-                        >
-                            Sign up
-                        </Link>
+                        {isLoaded && user ? (
+                            <Link
+                                href={user.unsafeMetadata?.role === 'employer' ? "/hr/dashboard" : "/dashboard"}
+                                className="text-sm font-medium bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-all hover:scale-105"
+                            >
+                                Go to Dashboard
+                            </Link>
+                        ) : (
+                            <>
+                                <Link href="/login" className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-white transition-colors">
+                                    Log in
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="text-sm font-medium bg-neutral-900 dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors"
+                                >
+                                    Sign up
+                                </Link>
+                            </>
+                        )}
                     </div>
 
                     {/* Mobile Menu Toggle */}
@@ -167,16 +180,28 @@ export default function Home() {
                                 <a href="#roles" className="text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>For Candidates</a>
                                 <a href="#roles" className="text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>For Employers</a>
                                 <hr className="border-neutral-200 dark:border-white/10" />
-                                <Link href="/login" className="text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                                    Log in
-                                </Link>
-                                <Link
-                                    href="/register"
-                                    className="bg-neutral-900 dark:bg-white text-white dark:text-black px-4 py-2 rounded-full text-center hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    Sign up
-                                </Link>
+                                {isLoaded && user ? (
+                                    <Link
+                                        href={user.unsafeMetadata?.role === 'employer' ? "/hr/dashboard" : "/dashboard"}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded-full text-center hover:bg-blue-700"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        Go to Dashboard
+                                    </Link>
+                                ) : (
+                                    <>
+                                        <Link href="/login" className="text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                            Log in
+                                        </Link>
+                                        <Link
+                                            href="/register"
+                                            className="bg-neutral-900 dark:bg-white text-white dark:text-black px-4 py-2 rounded-full text-center hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                        >
+                                            Sign up
+                                        </Link>
+                                    </>
+                                )}
                             </div>
                         </motion.div>
                     )}
@@ -212,13 +237,18 @@ export default function Home() {
                         </motion.p>
 
                         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                            <Link href="/register" className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-blue-600 px-8 font-medium text-white transition-all duration-300 hover:bg-blue-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-neutral-900">
-                                <span className="mr-2">Find a Job</span>
+                            <Link
+                                href={isLoaded && user ? (user.unsafeMetadata?.role === 'employer' ? "/hr/dashboard" : "/dashboard") : "/register"}
+                                className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-blue-600 px-8 font-medium text-white transition-all duration-300 hover:bg-blue-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-neutral-900"
+                            >
+                                <span className="mr-2">{isLoaded && user ? "Go to Dashboard" : "Find a Job"}</span>
                                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                             </Link>
-                            <Link href="/register" className="inline-flex h-12 items-center justify-center rounded-md border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/50 px-8 font-medium text-neutral-700 dark:text-neutral-300 transition-all duration-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-neutral-700 focus:ring-offset-2 focus:ring-offset-neutral-900">
-                                Post a Job
-                            </Link>
+                            {(!isLoaded || !user) && (
+                                <Link href="/register" className="inline-flex h-12 items-center justify-center rounded-md border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/50 px-8 font-medium text-neutral-700 dark:text-neutral-300 transition-all duration-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-neutral-700 focus:ring-offset-2 focus:ring-offset-neutral-900">
+                                    Post a Job
+                                </Link>
+                            )}
                         </motion.div>
                     </motion.div>
                 </section>
