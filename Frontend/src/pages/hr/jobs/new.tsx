@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { HRDashboardLayout } from '@/components/layout/HRDashboardLayout';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -39,7 +39,7 @@ export default function PostJobPage() {
     };
 
     return (
-        <DashboardLayout>
+        <HRDashboardLayout>
             <Head>
                 <title>Post New Job - JobMate AI</title>
             </Head>
@@ -160,6 +160,6 @@ export default function PostJobPage() {
                     </form>
                 </div>
             </div>
-        </DashboardLayout>
+        </HRDashboardLayout>
     );
 }

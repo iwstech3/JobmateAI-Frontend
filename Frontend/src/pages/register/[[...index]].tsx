@@ -12,6 +12,8 @@ export default function RegisterPage() {
     const { theme, toggleTheme } = useTheme();
 
     const [role, setRole] = useState<'seeker' | 'employer'>('seeker');
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [pendingVerification, setPendingVerification] = useState(false);
@@ -50,6 +52,8 @@ export default function RegisterPage() {
             await signUp.create({
                 emailAddress: email,
                 password,
+                firstName,
+                lastName,
             });
 
             // Prepare email verification
@@ -164,6 +168,42 @@ export default function RegisterPage() {
                                         <Briefcase className="w-6 h-6 mb-2" />
                                         <span className="text-sm font-medium">Employer</span>
                                     </button>
+                                </div>
+                            </div>
+
+                            {/* Name Fields */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        First Name
+                                    </label>
+                                    <div className="mt-1">
+                                        <input
+                                            id="firstName"
+                                            name="firstName"
+                                            type="text"
+                                            required
+                                            value={firstName}
+                                            onChange={(e) => setFirstName(e.target.value)}
+                                            className="block w-full rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Last Name
+                                    </label>
+                                    <div className="mt-1">
+                                        <input
+                                            id="lastName"
+                                            name="lastName"
+                                            type="text"
+                                            required
+                                            value={lastName}
+                                            onChange={(e) => setLastName(e.target.value)}
+                                            className="block w-full rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 

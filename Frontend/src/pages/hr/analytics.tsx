@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { HRDashboardLayout } from '@/components/layout/HRDashboardLayout';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -56,26 +56,26 @@ export default function AnalyticsPage() {
 
     if (isLoading) {
         return (
-            <DashboardLayout>
+            <HRDashboardLayout>
                 <div className="flex items-center justify-center min-h-screen">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
-            </DashboardLayout>
+            </HRDashboardLayout>
         );
     }
 
     if (!data) {
         return (
-            <DashboardLayout>
+            <HRDashboardLayout>
                 <div className="text-center py-20">
                     <p className="text-gray-500 dark:text-gray-400">Failed to load analytics data.</p>
                 </div>
-            </DashboardLayout>
+            </HRDashboardLayout>
         );
     }
 
     return (
-        <DashboardLayout>
+        <HRDashboardLayout>
             <Head>
                 <title>Analytics - JobMate AI</title>
             </Head>
@@ -270,7 +270,7 @@ export default function AnalyticsPage() {
                     </div>
                 </div>
             </div>
-        </DashboardLayout>
+        </HRDashboardLayout>
     );
 }
 
