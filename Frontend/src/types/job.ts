@@ -1,3 +1,5 @@
+import { ApplicationStatus } from './application';
+
 export type JobType = 'Full-time' | 'Part-time' | 'Contract' | 'Freelance' | 'Internship';
 export type JobStatus = 'active' | 'closed' | 'draft';
 
@@ -22,7 +24,7 @@ export interface JobApplication {
     userId: string;
     applicantName: string;
     applicantEmail: string;
-    status: 'submitted' | 'screening' | 'interview' | 'offer' | 'rejected' | 'hired';
+    status: ApplicationStatus;
     appliedAt: string;
     resumeUrl?: string;
     coverLetterUrl?: string;

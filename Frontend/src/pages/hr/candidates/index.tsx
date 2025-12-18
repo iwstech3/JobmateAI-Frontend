@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { HRDashboardLayout } from '@/components/layout/HRDashboardLayout';
 import { Button } from '@/components/ui/Button';
 import { hrService } from '@/services/hrService';
 import { JobApplication } from '@/types/job';
@@ -40,7 +40,7 @@ export default function CandidateListPage() {
     };
 
     return (
-        <DashboardLayout>
+        <HRDashboardLayout>
             <Head>
                 <title>Candidates - JobMate AI</title>
             </Head>
@@ -74,12 +74,12 @@ export default function CandidateListPage() {
                     <div className="flex gap-2">
                         <select className="p-2 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
                             <option value="all">All Status</option>
-                            <option value="submitted">Submitted</option>
-                            <option value="screening">Screening</option>
-                            <option value="interview">Interview</option>
-                            <option value="offer">Offer</option>
-                            <option value="rejected">Rejected</option>
-                            <option value="hired">Hired</option>
+                            <option value="Submitted">Submitted</option>
+                            <option value="Screening">Screening</option>
+                            <option value="Shortlisted">Shortlisted</option>
+                            <option value="Interview Scheduled">Interview Scheduled</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Accepted">Accepted</option>
                         </select>
                         <Button variant="outline" size="icon">
                             <Filter className="w-4 h-4" />
@@ -166,6 +166,6 @@ export default function CandidateListPage() {
                     </div>
                 )}
             </div>
-        </DashboardLayout>
+        </HRDashboardLayout>
     );
 }
