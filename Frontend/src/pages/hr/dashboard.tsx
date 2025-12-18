@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { HRDashboardLayout } from '@/components/layout/HRDashboardLayout';
 import { HRStats } from '@/components/hr/HRStats';
 import { hrService, DashboardStats } from '@/services/hrService';
 import { Plus, Users, Briefcase } from 'lucide-react';
@@ -27,7 +27,7 @@ export default function HRDashboardPage() {
     }, []);
 
     return (
-        <DashboardLayout>
+        <HRDashboardLayout>
             <Head>
                 <title>HR Dashboard - JobMate AI</title>
             </Head>
@@ -90,6 +90,6 @@ export default function HRDashboardPage() {
                     </div>
                 </div>
             </div>
-        </DashboardLayout>
+        </HRDashboardLayout>
     );
 }

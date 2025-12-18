@@ -3,85 +3,49 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
     LayoutDashboard,
+    PlusCircle,
     Briefcase,
-    FileText,
+    Users,
+    BarChart,
     Settings,
-    LogOut,
     Menu,
     X,
     Zap,
-    Bell,
-    Search,
     Sun,
     Moon
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
+import { UserButton, useUser } from "@clerk/nextjs";
 
-interface DashboardLayoutProps {
+interface HRDashboardLayoutProps {
     children: React.ReactNode;
 }
 
 const sidebarItems = [
-    { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
-    { icon: Briefcase, label: 'Applications', href: '/dashboard/applications' },
-    { icon: FileText, label: 'Resumes', href: '/dashboard/resumes' },
-    { icon: FileText, label: 'CV Generator', href: '/dashboard/cv-generator', featured: true },
-    { icon: FileText, label: 'Cover Letter', href: '/dashboard/cover-letter', featured: true },
-    { icon: Zap, label: 'Auto Apply', href: '/dashboard/auto-apply', featured: true },
-    { icon: Search, label: 'Job Matches', href: '/dashboard/job-matches' },
-    { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+    { icon: LayoutDashboard, label: 'Overview', href: '/hr/dashboard' },
+    { icon: PlusCircle, label: 'Post a Job', href: '/hr/jobs/new', featured: true },
+    { icon: Briefcase, label: 'Manage Jobs', href: '/hr/jobs' },
+    { icon: Users, label: 'Candidates', href: '/hr/candidates' },
+    { icon: BarChart, label: 'Analytics', href: '/hr/analytics' },
+    { icon: Settings, label: 'Settings', href: '/dashboard/settings' }, // Shared settings for now
 ];
 
-import { UserButton, useUser } from "@clerk/nextjs";
-
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+export const HRDashboardLayout: React.FC<HRDashboardLayoutProps> = ({ children }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const router = useRouter();
     const { user, isLoaded } = useUser();
     const { theme, toggleTheme } = useTheme();
 
-    // Role Check & Access Control
+    // Role Check & Strict Access Control for HR
     useEffect(() => {
         if (isLoaded && user) {
-            const checkRole = async () => {
-                let role = user.unsafeMetadata?.role as string;
+            const role = user.unsafeMetadata?.role as string;
 
-                // 1. Handle "Pending Role" from SS0/Registration
-                if (!role) {
-                    const pendingRole = localStorage.getItem('onboarding_role');
-                    if (pendingRole) {
-                        try {
-                            await user.update({
-                                unsafeMetadata: { ...user.unsafeMetadata, role: pendingRole }
-                            });
-                            role = pendingRole;
-                            localStorage.removeItem('onboarding_role');
-                        } catch (err) {
-                            console.error("Error applying pending role:", err);
-                        }
-                    }
-                }
-
-                // 2. Strict Access Control
-                const path = router.pathname;
-
-                if (role === 'seeker') {
-                    // Seekers cannot access /hr routes
-                    if (path.startsWith('/hr')) {
-                        router.push('/dashboard');
-                    }
-                } else if (role === 'employer') {
-                    // Employers cannot access /dashboard routes (except maybe settings? checks needed)
-                    // User requested strict separation: "if employer, only /hr/dashboard"
-                    // We assume /hr/dashboard is their root.
-                    if (path.startsWith('/dashboard')) {
-                        router.push('/hr/dashboard');
-                    }
-                } // If no role, we might want to redirect to /register? allow for now.
-            };
-
-            checkRole();
+            if (role === 'seeker') {
+                // Seekers are strictly forbidden here
+                router.push('/dashboard');
+            }
+            // If no role, we wait or let the main layout handle it (or handle it here)
         }
     }, [isLoaded, user, router]);
 
@@ -93,7 +57,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
             <div className="lg:hidden fixed top-0 w-full z-40 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-white/10 px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <UserButton afterSignOutUrl="/login" />
-                    <span className="font-bold text-lg text-neutral-900 dark:text-white">JobMate</span>
+                    <span className="font-bold text-lg text-neutral-900 dark:text-white">JobMate HR</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
@@ -116,10 +80,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                 <div className="h-full flex flex-col">
                     <div className="hidden lg:flex items-center justify-between px-6 h-16 border-b border-gray-200 dark:border-white/10">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                                <Zap className="w-5 h-5 text-white" fill="currentColor" />
+                            <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                                <Briefcase className="w-5 h-5 text-white" fill="currentColor" />
                             </div>
-                            <span className="font-bold text-xl text-neutral-900 dark:text-white">JobMate AI</span>
+                            <span className="font-bold text-xl text-neutral-900 dark:text-white">JobMate HR</span>
                         </div>
                     </div>
 
@@ -133,23 +97,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                                     key={item.href}
                                     href={item.href}
                                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden ${isActive
-                                        ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                                        ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400'
                                         : isFeatured
-                                            ? 'bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-700 dark:text-purple-300 hover:from-purple-500/20 hover:to-blue-500/20 border border-purple-200/50 dark:border-purple-500/20'
+                                            ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-700 dark:text-blue-300 hover:from-blue-500/20 hover:to-purple-500/20 border border-blue-200/50 dark:border-blue-500/20'
                                             : 'text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
                                         }`}
                                 >
                                     {isFeatured && (
-                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     )}
-                                    <item.icon className={`w-5 h-5 relative z-10 ${isActive ? 'text-blue-600 dark:text-blue-400' : isFeatured ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400 dark:text-gray-500'}`} />
+                                    <item.icon className={`w-5 h-5 relative z-10 ${isActive ? 'text-purple-600 dark:text-purple-400' : isFeatured ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`} />
                                     <span className="relative z-10">{item.label}</span>
-                                    {isFeatured && (
-                                        <span className="ml-auto relative z-10 flex h-2 w-2">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
-                                        </span>
-                                    )}
                                 </Link>
                             );
                         })}
