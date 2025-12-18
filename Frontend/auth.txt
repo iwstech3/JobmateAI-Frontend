@@ -1,0 +1,66 @@
+# Authentication Strategy Recommendation
+
+## Option 1: Supabase (Recommended for Speed & Simplicity)
+**What it is:** A Backend-as-a-Service that provides a Postgres database, Authentication, and Realtime subscriptions out of the box.
+
+**Pros:**
+- **Speed:** You can have full authentication (Email, Google, GitHub, etc.) running in 10 minutes.
+- **Integration:** Excellent libraries for Next.js (`@supabase/ssr` or `@supabase/auth-helpers-nextjs`) that handle cookies/sessions automatically.
+- **Security:** Security is handled by experts. Row Level Security (RLS) protects your data at the database level.
+- **Cost:** Generous free tier.
+
+**Cons:**
+- **Vendor Lock-in:** While open source, moving away requires more effort than a custom container.
+
+**Verdict:** **Choose Supabase** if you want to focus on building the Frontend and AI features without worrying about maintaining a backend server for user management.
+
+---
+
+## Option 2: Custom API on Render (Recommended for Control & Custom AI Logic)
+**What it is:** Building your own server (e.g., using Python FastAPI or Node.js Express) and hosting it on Render.
+
+**Pros:**
+- **Control:** You own every line of code.
+- **AI Integration:** If your AI logic is in Python, it's easier to keep Auth and AI in the same backend service.
+- **Flexibility:** You can design the database schema exactly how you want without RLS constraints.
+
+**Cons:**
+- **Maintenance:** You are responsible for security patches, database migrations, and server uptime.
+- **Complexity:** Handling JWTs, refresh tokens, and secure password hashing correctly is non-trivial.
+
+---
+
+## Prompt for External AI (If choosing Option 2)
+
+If you decide to build a custom API hosted on Render, copy and paste the following prompt to an AI coding assistant:
+
+```text
+I need you to build a production-ready Authentication API for my application "JobMate AI". 
+The frontend is built with Next.js and hosted on Vercel. 
+The backend will be hosted on Render.
+
+**Tech Stack:**
+- Language: Python 3.10+
+- Framework: FastAPI (for high performance and easy AI integration)
+- Database: PostgreSQL (using SQLAlchemy or SQLModel)
+- Security: PyJWT for token handling, Passlib for password hashing
+
+**Requirements:**
+1. **Project Structure:** Create a clean folder structure (app/routers, app/models, app/core).
+2. **Authentication Endpoints:**
+   - POST /auth/register: Create a new user (email, password, full_name).
+   - POST /auth/login: Return a JWT access token.
+   - GET /users/me: Protected route to get current user details.
+3. **Security:**
+   - Use OAuth2PasswordBearer.
+   - Hash passwords using bcrypt.
+   - Implement JWT expiration.
+4. **CORS Configuration:**
+   - Configure CORS to allow requests from my frontend domain (allow all origins '*' for development, but comment where to put the specific domain).
+5. **Deployment Files for Render:**
+   - Create a `requirements.txt` with all dependencies.
+   - Create a `render.yaml` or specify the Start Command (e.g., `uvicorn app.main:app --host 0.0.0.0 --port 10000`).
+
+**Output:**
+Please provide the complete code for the main application file, database connection setup, models, schemas, and the authentication router. Also include the necessary deployment configuration files.
+```
