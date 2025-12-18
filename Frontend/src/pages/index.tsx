@@ -212,11 +212,11 @@ export default function Home() {
                         </motion.p>
 
                         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                            <Link href="/dashboard/applications" className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-blue-600 px-8 font-medium text-white transition-all duration-300 hover:bg-blue-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-neutral-900">
+                            <Link href="/register" className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-blue-600 px-8 font-medium text-white transition-all duration-300 hover:bg-blue-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-neutral-900">
                                 <span className="mr-2">Find a Job</span>
                                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                             </Link>
-                            <Link href="/hr/dashboard" className="inline-flex h-12 items-center justify-center rounded-md border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/50 px-8 font-medium text-neutral-700 dark:text-neutral-300 transition-all duration-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-neutral-700 focus:ring-offset-2 focus:ring-offset-neutral-900">
+                            <Link href="/register" className="inline-flex h-12 items-center justify-center rounded-md border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/50 px-8 font-medium text-neutral-700 dark:text-neutral-300 transition-all duration-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-neutral-700 focus:ring-offset-2 focus:ring-offset-neutral-900">
                                 Post a Job
                             </Link>
                         </motion.div>
@@ -291,7 +291,7 @@ export default function Home() {
                                         <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-500" /> Salary Insights
                                     </li>
                                 </ul>
-                                <Link href="/dashboard/applications" className="inline-flex items-center text-blue-600 dark:text-blue-400 font-medium hover:text-blue-500 dark:hover:text-blue-300 transition-colors">
+                                <Link href="/register" className="inline-flex items-center text-blue-600 dark:text-blue-400 font-medium hover:text-blue-500 dark:hover:text-blue-300 transition-colors">
                                     Get Started <ArrowRight className="w-4 h-4 ml-2" />
                                 </Link>
                             </div>
@@ -318,7 +318,7 @@ export default function Home() {
                                         <CheckCircle className="w-5 h-5 text-purple-600 dark:text-purple-500" /> Collaborative Hiring
                                     </li>
                                 </ul>
-                                <Link href="/hr/dashboard" className="inline-flex items-center text-purple-600 dark:text-purple-400 font-medium hover:text-purple-500 dark:hover:text-purple-300 transition-colors">
+                                <Link href="/register" className="inline-flex items-center text-purple-600 dark:text-purple-400 font-medium hover:text-purple-500 dark:hover:text-purple-300 transition-colors">
                                     Post a Job <ArrowRight className="w-4 h-4 ml-2" />
                                 </Link>
                             </div>

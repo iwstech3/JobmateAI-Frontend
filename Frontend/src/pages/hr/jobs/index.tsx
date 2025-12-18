@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { HRDashboardLayout } from '@/components/layout/HRDashboardLayout';
 import { Button } from '@/components/ui/Button';
 import { useJobStore } from '@/store/jobStore';
-import { Plus, Search, MapPin, Clock, Users, MoreVertical } from 'lucide-react';
+import { Plus, Search, MapPin, Clock, Users, MoreVertical, Briefcase } from 'lucide-react';
 import { StatusBadge } from '@/components/common/StatusBadge'; // We might need a specific JobStatusBadge
 import { JobStatus } from '@/types/job';
 
@@ -31,7 +31,7 @@ export default function JobListPage() {
     }, [fetchJobs]);
 
     return (
-        <DashboardLayout>
+        <HRDashboardLayout>
             <Head>
                 <title>Manage Jobs - JobMate AI</title>
             </Head>
@@ -129,6 +129,6 @@ export default function JobListPage() {
                     </div>
                 )}
             </div>
-        </DashboardLayout>
+        </HRDashboardLayout>
     );
 }

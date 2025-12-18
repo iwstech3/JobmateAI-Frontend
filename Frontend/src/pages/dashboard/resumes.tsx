@@ -13,7 +13,7 @@ import {
     File,
     MoreVertical
 } from 'lucide-react';
-import { cvService } from '@/services/cvService';
+import * as cvService from '@/services/cvService';
 import { coverLetterService } from '@/services/coverLetterService';
 import { CVData } from '@/types/cv';
 import { CoverLetterData } from '@/types/coverLetter';
@@ -41,10 +41,10 @@ export default function ResumesPage() {
             ]);
 
             // Sort by date created (newest first)
-            const sortedCvs = (cvData || []).sort((a, b) =>
+            const sortedCvs = (cvData || []).sort((a: CVData, b: CVData) =>
                 new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
             );
-            const sortedCls = (clData || []).sort((a, b) =>
+            const sortedCls = (clData || []).sort((a: CoverLetterData, b: CoverLetterData) =>
                 new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
             );
 
