@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { HRDashboardLayout } from '@/components/layout/HRDashboardLayout';
+import { useUser } from '@clerk/nextjs';
 import { HRStats } from '@/components/hr/HRStats';
 import { hrService, DashboardStats } from '@/services/hrService';
 import { Plus, Users, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export default function HRDashboardPage() {
+    const { user, isLoaded: isUserLoaded } = useUser();
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -36,8 +38,10 @@ export default function HRDashboardPage() {
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">HR Overview</h1>
-                        <p className="text-gray-500 dark:text-gray-400">Welcome back! Here's what's happening today.</p>
+                        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                            Welcome back, {user?.firstName || 'HR'}! 👋
+                        </h1>
+                        <p className="text-gray-500 dark:text-gray-400">Here's what's happening today.</p>
                     </div>
                     <Link href="/hr/jobs/new">
                         <Button className="w-full sm:w-auto">
