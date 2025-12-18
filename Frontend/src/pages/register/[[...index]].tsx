@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useSignUp } from "@clerk/nextjs";
+import { useState, useEffect } from "react";
+import { useSignUp, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { Briefcase, User, Eye, EyeOff, CheckCircle, Zap, Sun, Moon } from "lucide-react";
@@ -8,8 +8,17 @@ import { useTheme } from "@/context/ThemeContext";
 
 export default function RegisterPage() {
     const { isLoaded, signUp, setActive } = useSignUp();
+    const { user, isLoaded: isUserLoaded } = useUser();
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+
+    // Redirect if already signed in
+    useEffect(() => {
+        if (isUserLoaded && user) {
+            const role = user.unsafeMetadata?.role as string;
+            router.push(role === 'employer' ? '/hr/dashboard' : '/dashboard');
+        }
+    }, [isUserLoaded, user, router]);
 
     const [role, setRole] = useState<'seeker' | 'employer'>('seeker');
     const [firstName, setFirstName] = useState("");
